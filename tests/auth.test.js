@@ -28,8 +28,17 @@ describe('Auth API', () => {
           secretWord: process.env.SECRET_WORD
         });
 
+      console.log('Response body:', res.body);
+
       expect(res.status).to.equal(201);
+      expect(res.headers['content-type']).to.match(/json/);
+      expect(res.body).to.have.property('message');
+      expect(res.body.message).to.equal('Пользователь успешно зарегистрирован');
       expect(res.body).to.have.property('userId');
+      expect(res.body.userId).to.be.a('number');
+      expect(res.body.userId).to.be.greaterThan(0);
+      expect(res.body).to.not.have.property('password');
+      expect(res.body).to.not.have.property('secretWord');
     });
 
     it('should not register an admin without secret word', async () => {
@@ -47,8 +56,14 @@ describe('Auth API', () => {
           role: 'admin'
         });
 
+      console.log('Response body:', res.body);
+
       expect(res.status).to.equal(403);
+      expect(res.headers['content-type']).to.match(/json/);
       expect(res.body).to.have.property('error');
+      expect(res.body.error).to.equal('Неверное секретное слово для регистрации администратора');
+      expect(res.body).to.not.have.property('userId');
+      expect(res.body).to.not.have.property('message');
     });
   });
 
@@ -61,8 +76,16 @@ describe('Auth API', () => {
           password: 'password123',
         });
 
+      console.log('Response body:', res.body);
+
       expect(res.status).to.equal(200);
+      expect(res.headers['content-type']).to.match(/json/);
       expect(res.body).to.have.property('token');
+      expect(res.body.token).to.be.a('string');
+      expect(res.body.token).to.have.length.greaterThan(10);
+
+      const tokenParts = res.body.token.split('.');
+      expect(tokenParts.length).to.equal(3);
     });
 
     it('should not login with invalid credentials', async () => {
@@ -73,8 +96,13 @@ describe('Auth API', () => {
           password: 'wrongpassword'
         });
 
+      console.log('Response body:', res.body);
+
       expect(res.status).to.equal(400);
+      expect(res.headers['content-type']).to.match(/json/);
       expect(res.body).to.have.property('error');
+      expect(res.body.error).to.equal('Неверные учетные данные');
+      expect(res.body).to.not.have.property('token');
     });
   });
 });
