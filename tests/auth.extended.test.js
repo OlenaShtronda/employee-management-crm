@@ -4,7 +4,7 @@ const { expect } = require('chai');
 const app = require('../app');
 const db = require('../models');
 
-describe('Auth API - Extended Register Tests', () => {
+describe('Auth API - Additional Register Tests', () => {
   before(async () => {
     await db.sequelize.query('DROP SCHEMA IF EXISTS public CASCADE;');
     await db.sequelize.query('CREATE SCHEMA public;');
@@ -12,7 +12,7 @@ describe('Auth API - Extended Register Tests', () => {
   });
 
   describe('POST /register', () => {
-    it('should reject missing required fields', async () => {
+    it('should not register with missing required fields', async () => {
       const res = await request(app)
         .post('/register')
         .send({
@@ -50,7 +50,7 @@ describe('Auth API - Extended Register Tests', () => {
       expect(emailError).to.be.undefined;
     });
 
-    it('should reject invalid email: format', async () => {
+    it('should not register with invalid email: format', async () => {
       const invalidEmails = [
         'employeeexample.com',
         'employee@.com',
@@ -84,7 +84,7 @@ describe('Auth API - Extended Register Tests', () => {
       };
     });
 
-    it('should reject email longer than 80 characters', async () => {  
+    it('should not register with email longer than 80 characters', async () => {  
       const res = await request(app)
         .post('/register')
         .send({
@@ -115,7 +115,7 @@ describe('Auth API - Extended Register Tests', () => {
         expect(lengthError.param).to.equal('email');
     });
 
-    it('should reject invalid password: length', async () => {
+    it('should not register with invalid password: length', async () => {
        const invalidPasswords = ['123', '123456789012345678901'];
 
       for(const password of invalidPasswords) {
@@ -144,7 +144,7 @@ describe('Auth API - Extended Register Tests', () => {
       };
     });
 
-    it('should reject invalid firstName: length', async () => {
+    it('should not register with invalid firstName: length', async () => {
       const invalidFirstNames = ['J', 'J'.repeat(41)];
 
       for(const firstName of invalidFirstNames) {
@@ -173,7 +173,7 @@ describe('Auth API - Extended Register Tests', () => {
       };
     });
 
-    it('should reject invalid lastName: length', async () => {
+    it('should not register with invalid lastName: length', async () => {
       const invalidLastNames = ['D', 'D'.repeat(41)];
 
       for (const lastName of invalidLastNames) {
@@ -202,7 +202,7 @@ describe('Auth API - Extended Register Tests', () => {
       };
     });
 
-    it('should reject invalid middleName: length', async () => {
+    it('should not register with invalid middleName: length', async () => {
       const invalidMiddleNames = ['T', 'T'.repeat(41)];
 
       for (const middleName of invalidMiddleNames) {
@@ -231,7 +231,7 @@ describe('Auth API - Extended Register Tests', () => {
       };
     });
 
-    it('should reject invalid birthDate', async () => {
+    it('should not register with invalid birthDate', async () => {
       const invalidBirthDates = ['not-a-date', '2025-13-01', '1990-02-30'];
 
       for (const birthDate of invalidBirthDates) {
@@ -260,7 +260,7 @@ describe('Auth API - Extended Register Tests', () => {
       };
     });
 
-    it('should reject invalid phone: length', async () => {
+    it('should not register with invalid phone: length', async () => {
       const tooLongPhone = '1'.repeat(51);
 
       const res = await request(app)
@@ -287,7 +287,7 @@ describe('Auth API - Extended Register Tests', () => {
       expect(res.body.errors[0].msg).to.equal('Телефон не должен быть длиннее 50 символов');
     });
 
-    it('should reject invalid programmingLanguage: length', async () => {
+    it('should not register with invalid programmingLanguage: length', async () => {
       const tooLongProgrammingLanguage = 'A'.repeat(101);
 
       const res = await request(app)
@@ -338,7 +338,7 @@ describe('Auth API - Extended Register Tests', () => {
       expect(res.body.error).to.equal('Неверное секретное слово для регистрации администратора');
     });
 
-    it('should reject role escalation', async () => {
+    it('should reject role escalation during registration', async () => {
       const res = await request(app)
         .post('/register')
         .send({
@@ -363,7 +363,7 @@ describe('Auth API - Extended Register Tests', () => {
   });
 
   describe('POST /login', () => {
-    it('should reject missing required fields', async () => {
+    it('should not login with missing required fields', async () => {
       const res = await request(app)
         .post('/login')
         .send({});
@@ -387,7 +387,7 @@ describe('Auth API - Extended Register Tests', () => {
       expect(passwordError.location).to.equal('body');
     });
 
-    it('should reject invalid email format', async () => {
+    it('should not login with invalid email format', async () => {
       const invalidEmails = [
         'employeeexample.com',
         'employee@.com',
@@ -415,7 +415,7 @@ describe('Auth API - Extended Register Tests', () => {
       }
     });
 
-    it('should reject empty password', async () => {
+    it('should not login with empty password', async () => {
       const res = await request(app)
         .post('/login')
         .send({
