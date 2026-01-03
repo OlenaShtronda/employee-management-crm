@@ -5,7 +5,7 @@ const { faker } = require('@faker-js/faker');
 const app = require('../app');
 const db = require('../models');
 
-describe('Authentication API', () => {
+describe('Authentication API Tests', () => {
   let adminEmail;
   let adminPassword;
   let employeeEmail;

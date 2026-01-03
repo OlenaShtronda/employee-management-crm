@@ -172,8 +172,7 @@ describe('Users API Tests', function() {
 
         expect(res.status).to.equal(401);
         expect(res.headers['content-type']).to.match(/json/);
-        expect(res.body).to.have.property('error');
-        expect(res.body.error).to.equal('Токен не предоставлен');
+        expect(res.body).to.have.property('error', 'Токен не предоставлен');
       });
 
       it('Verify specific error is returned for expired token', async () => {
@@ -203,8 +202,7 @@ describe('Users API Tests', function() {
 
         expect(res.status).to.equal(403);
         expect(res.headers['content-type']).to.match(/json/);
-        expect(res.body).to.have.property('error');
-        expect(res.body.error).to.equal('Недействительный токен');
+        expect(res.body).to.have.property('error', 'Недействительный токен');
       });
     });
 
@@ -347,9 +345,9 @@ describe('Users API Tests', function() {
           expect(res.headers['content-type']).to.match(/json/);
           expect(res.body).to.have.property('errors');
           
-          const pageError = res.body.errors.find(err => err.msg === 'Параметр "limit" должен быть положительным целым числом');
-          expect(pageError).to.exist;
-          expect(pageError.param).to.equal('limit');
+          const limitError = res.body.errors.find(err => err.msg === 'Параметр "limit" должен быть положительным целым числом');
+          expect(limitError).to.exist;
+          expect(limitError.param).to.equal('limit');
         }
       });
     });
@@ -575,8 +573,7 @@ describe('Users API Tests', function() {
       
       expect(res.status).to.equal(401);
       expect(res.headers['content-type']).to.match(/json/);
-      expect(res.body).to.have.property('error');
-      expect(res.body.error).to.equal('Токен не предоставлен');
+      expect(res.body).to.have.property('error', 'Токен не предоставлен');
       expect(res.body).to.not.have.property('email');
       expect(res.body).to.not.have.property('id');   
     });
@@ -585,6 +582,56 @@ describe('Users API Tests', function() {
      GET /users/:id
   ============================ */
   describe('GET /users/:id', () => {
+    describe('Successful response', () => {
+      it('Verify successful response returns correct user data', async () => {
+        const res = await request(app)
+          .get(`/users/${employeeId}`)
+          .set('Authorization', `Bearer ${adminToken}`);
+
+        console.log('Response body:', res.body);
+
+        expect(res.status).to.equal(200);
+        expect(res.headers['content-type']).to.match(/json/);
+        expect(res.body).to.have.property('id', employeeId);
+      });
+
+      it('Verify 404 is returned for non-existing user ID', async () => {
+        const res = await request(app)
+          .get('/users/999999')
+          .set('Authorization', `Bearer ${adminToken}`);
+
+        console.log('Response body:', res.body);
+
+        expect(res.status).to.equal(404);
+        expect(res.headers['content-type']).to.match(/json/);
+        expect(res.body).to.have.property('message', 'User not found');
+      });
+    });
+
+    describe('Authorization', () => {
+      it('Verify 401 is returned if no token is provided', async () => {
+        const res = await request(app).get(`/users/${employeeId}`);
+
+        console.log('Response body:', res.body);
+
+        expect(res.status).to.equal(401);
+        expect(res.headers['content-type']).to.match(/json/);
+        expect(res.body).to.have.property('error', 'Токен не предоставлен');
+      });
+
+      it('Verify 401 is returned if token is invalid', async () => {
+        const res = await request(app)
+          .get(`/users/${employeeId}`)
+          .set('Authorization', 'Bearer invalidtoken');
+
+        console.log('Response body:', res.body);
+
+        expect(res.status).to.equal(403);
+        expect(res.headers['content-type']).to.match(/json/);
+        expect(res.body).to.have.property('error', 'Недействительный токен');
+      });
+    });
+
     describe('ID validation', () => {
       it('Verify validation error is returned for invalid user ID in get endpoint', async () => {
         const res = await request(app)
@@ -671,8 +718,7 @@ describe('Users API Tests', function() {
         
         expect(res.status).to.equal(403);
         expect(res.headers['content-type']).to.match(/json/);
-        expect(res.body).to.have.property('error');
-        expect(res.body.error).to.equal('Доступ запрещен');
+        expect(res.body).to.have.property('error', 'Доступ запрещен');
       });
     });
 
@@ -699,8 +745,7 @@ describe('Users API Tests', function() {
 
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
-        expect(res.body).to.have.property('error');
-        expect(res.body.error).to.equal('Пользователь с таким email уже существует');
+        expect(res.body).to.have.property('error', 'Пользователь с таким email уже существует');
       });
 
       it('Verify user creation is rejected when required fields are missing', async () => {
@@ -906,8 +951,7 @@ describe('Users API Tests', function() {
   
         expect(res.status).to.equal(404);
         expect(res.headers['content-type']).to.match(/json/);
-        expect(res.body).to.have.property('error');
-        expect(res.body.error).to.equal('User not found');
+        expect(res.body).to.have.property('error', 'User not found');
       });
     });
 
@@ -947,8 +991,7 @@ describe('Users API Tests', function() {
   
         expect(res.status).to.equal(403);
         expect(res.headers['content-type']).to.match(/json/);
-        expect(res.body).to.have.property('error');
-        expect(res.body.error).to.equal('Только администратор может обновлять поле salary');
+        expect(res.body).to.have.property('error', 'Только администратор может обновлять поле salary');
       });
   
       it('Verify admin can update all fields including salary and role', async () => {
@@ -1020,8 +1063,7 @@ describe('Users API Tests', function() {
   
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
-        expect(res.body).to.have.property('error');
-        expect(res.body.error).to.equal('Нельзя удалить самого себя');
+        expect(res.body).to.have.property('error', 'Нельзя удалить самого себя');
       });
   
       it('Verify admin can delete other employees', async () => {
