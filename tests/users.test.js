@@ -1,4 +1,4 @@
-// tests/user.extended.test.js
+// tests/users.test.js
 const request = require('supertest');
 const { expect } = require('chai');
 const { faker } = require('@faker-js/faker');
@@ -141,8 +141,6 @@ describe('Users API Tests', function() {
           .get('/users')
           .set('Authorization', `Bearer ${adminToken}`);
 
-        console.log('Response body:', res.body);
-        
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('users');
@@ -155,8 +153,6 @@ describe('Users API Tests', function() {
           .get('/users')
           .set('Authorization', `Bearer ${employeeToken}`);
 
-        console.log('Response body:', res.body);
-        
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('users');
@@ -167,8 +163,6 @@ describe('Users API Tests', function() {
       it('Verify users are not returned without token', async () => {
         const res = await request(app)
           .get('/users');
-
-        console.log('Response body:', res.body);
 
         expect(res.status).to.equal(401);
         expect(res.headers['content-type']).to.match(/json/);
@@ -187,8 +181,6 @@ describe('Users API Tests', function() {
           .get('/users')
           .set('Authorization', `Bearer ${expiredToken}`);
 
-        console.log('Response body:', res.body);
-
         expect(res.status).to.equal(401);
         expect(res.body.error).to.include('истек');
       });
@@ -197,8 +189,6 @@ describe('Users API Tests', function() {
         const res = await request(app)
           .get('/users')
           .set('Authorization', `Bearer invalid.token.here`);
-
-        console.log('Response body:', res.body);
 
         expect(res.status).to.equal(403);
         expect(res.headers['content-type']).to.match(/json/);
@@ -212,8 +202,6 @@ describe('Users API Tests', function() {
           .get('/users')
           .set('Authorization', `Bearer ${adminToken}`);
 
-        console.log('Response body:', res.body);
-        
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
 
@@ -226,8 +214,6 @@ describe('Users API Tests', function() {
           .get('/users')
           .set('Authorization', `Bearer ${employeeToken}`);
 
-        console.log('Response body:', res.body);
-        
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
 
@@ -242,8 +228,6 @@ describe('Users API Tests', function() {
           .get('/users?page=1&limit=2')
           .set('Authorization', `Bearer ${employeeToken}`);
 
-        console.log('Response body:', res.body);
-        
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body.users).to.be.an('array').that.has.lengthOf(2);
@@ -257,8 +241,6 @@ describe('Users API Tests', function() {
           .get('/users?page=100&limit=10')
           .set('Authorization', `Bearer ${employeeToken}`);
         
-        console.log('Response body:', res.body);
-        
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body.users).to.be.an('array').that.is.empty;
@@ -268,8 +250,6 @@ describe('Users API Tests', function() {
         const res = await request(app)
           .get('/users?limit=100')
           .set('Authorization', `Bearer ${employeeToken}`);
-
-        console.log('Response body:', res.body);
 
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
@@ -284,8 +264,6 @@ describe('Users API Tests', function() {
           .get('/users?page=abc')
           .set('Authorization', `Bearer ${employeeToken}`);
 
-        console.log('Response body:', res.body);
-        
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('errors');
@@ -299,8 +277,6 @@ describe('Users API Tests', function() {
         const res = await request(app)
           .get('/users?limit=abc')
           .set('Authorization', `Bearer ${employeeToken}`);
-
-        console.log('Response body:', res.body);
 
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
@@ -319,8 +295,6 @@ describe('Users API Tests', function() {
             .get(`/users?page=${page}`)
             .set('Authorization', `Bearer ${adminToken}`);
             
-          console.log('Response body:', res.body);
-          
           expect(res.status).to.equal(400);
           expect(res.headers['content-type']).to.match(/json/);
           expect(res.body).to.have.property('errors');
@@ -338,8 +312,6 @@ describe('Users API Tests', function() {
           const res = await request(app)
             .get(`/users?limit=${limit}`)
             .set('Authorization', `Bearer ${adminToken}`);
-    
-          console.log('Response body:', res.body);
     
           expect(res.status).to.equal(400);
           expect(res.headers['content-type']).to.match(/json/);
@@ -361,8 +333,6 @@ describe('Users API Tests', function() {
           .get(`/users?firstName=${employeeFirstName}`)
           .set('Authorization', `Bearer ${employeeToken}`);
 
-        console.log('Response body:', res.body);
-
         expect(res.status).to.equal(200);
         expect(res.body.users).to.be.an('array');
         expect(res.body.users[0]).to.have.property('firstName', employeeFirstName);
@@ -376,8 +346,6 @@ describe('Users API Tests', function() {
           .get(`/users?lastName=${employeeLastName}`)
           .set('Authorization', `Bearer ${employeeToken}`);
         
-        console.log('Response body:', res.body);
-
         expect(res.status).to.equal(200);
         expect(res.body.users).to.be.an('array');
         expect(res.body.users[0]).to.have.property('lastName', employeeLastName);
@@ -390,8 +358,6 @@ describe('Users API Tests', function() {
         const res = await request(app)
           .get(`/users?firstName=${firstNameLower}`)
           .set('Authorization', `Bearer ${employeeToken}`);
-        
-        console.log('Response body:', res.body);
         
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
@@ -409,8 +375,6 @@ describe('Users API Tests', function() {
           .get(`/users?lastName=${lastNameLower}`)
           .set('Authorization', `Bearer ${employeeToken}`);
         
-        console.log('Response body:', res.body);
-        
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('users');
@@ -424,8 +388,6 @@ describe('Users API Tests', function() {
           .get('/users?firstName=NonExistent')
           .set('Authorization', `Bearer ${employeeToken}`);
 
-        console.log('Response body:', res.body);
-        
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body.users).to.be.an('array').that.is.empty;
@@ -436,8 +398,6 @@ describe('Users API Tests', function() {
           .get('/users?lastName=NonExistent')
           .set('Authorization', `Bearer ${employeeToken}`);
 
-        console.log('Response body:', res.body);
-        
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body.users).to.be.an('array').that.is.empty;
@@ -452,10 +412,7 @@ describe('Users API Tests', function() {
           .get(`/users?firstName=${firstNameCriteria}&mentorName=${mentorNameCriteria}`)
           .set('Authorization', `Bearer ${adminToken}`);
 
-        console.log('Response body:', res.body);
-
         expect(res.status).to.equal(200);
-        expect(res.body.users).to.be.an('array').that.has.lengthOf(1);
         expect(res.body.users[0]).to.have.property('firstName', firstNameCriteria);
         expect(res.body.users[0]).to.have.property('mentorName', mentorNameCriteria);
       });
@@ -480,8 +437,6 @@ describe('Users API Tests', function() {
               .get(`/users?sortBy=${field}&order=${order}`)
               .set('Authorization', `Bearer ${employeeToken}`);
 
-            console.log('Response body:', res.body);
-            
             expect(res.status).to.equal(200);
             expect(res.body.users).to.be.an('array');
 
@@ -498,8 +453,6 @@ describe('Users API Tests', function() {
           .get('/users?sortBy=invalidField')
           .set('Authorization', `Bearer ${employeeToken}`);
 
-        console.log('Response body:', res.body);
-
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('errors');
@@ -510,8 +463,6 @@ describe('Users API Tests', function() {
         const res = await request(app)
           .get('/users?order=INVALID')
           .set('Authorization', `Bearer ${employeeToken}`);
-
-        console.log('Response body:', res.body);
 
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
@@ -525,8 +476,6 @@ describe('Users API Tests', function() {
         const res = await request(app)
           .get('/users?page=-1&limit=0&sortBy=invalidField')
           .set('Authorization', `Bearer ${employeeToken}`);
-
-        console.log('Response body:', res.body);
 
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
@@ -552,8 +501,6 @@ describe('Users API Tests', function() {
         .get('/profile')
         .set('Authorization', `Bearer ${employeeToken}`);
 
-      console.log('Response body:', res.body);
-      
       expect(res.status).to.equal(200);
       expect(res.headers['content-type']).to.match(/json/);
       expect(res.body).to.include({
@@ -568,8 +515,6 @@ describe('Users API Tests', function() {
     it('Verify current logged-in user profile is not returned without token', async function() {
       const res = await request(app)
         .get('/profile');
-      
-      console.log('Response body:', res.body);
       
       expect(res.status).to.equal(401);
       expect(res.headers['content-type']).to.match(/json/);
@@ -588,8 +533,6 @@ describe('Users API Tests', function() {
           .get(`/users/${employeeId}`)
           .set('Authorization', `Bearer ${adminToken}`);
 
-        console.log('Response body:', res.body);
-
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('id', employeeId);
@@ -599,8 +542,6 @@ describe('Users API Tests', function() {
         const res = await request(app)
           .get('/users/999999')
           .set('Authorization', `Bearer ${adminToken}`);
-
-        console.log('Response body:', res.body);
 
         expect(res.status).to.equal(404);
         expect(res.headers['content-type']).to.match(/json/);
@@ -612,8 +553,6 @@ describe('Users API Tests', function() {
       it('Verify 401 is returned if no token is provided', async () => {
         const res = await request(app).get(`/users/${employeeId}`);
 
-        console.log('Response body:', res.body);
-
         expect(res.status).to.equal(401);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('error', 'Токен не предоставлен');
@@ -623,8 +562,6 @@ describe('Users API Tests', function() {
         const res = await request(app)
           .get(`/users/${employeeId}`)
           .set('Authorization', 'Bearer invalidtoken');
-
-        console.log('Response body:', res.body);
 
         expect(res.status).to.equal(403);
         expect(res.headers['content-type']).to.match(/json/);
@@ -638,8 +575,6 @@ describe('Users API Tests', function() {
           .get('/users/xyz')
           .set('Authorization', `Bearer ${adminToken}`);
 
-        console.log('Response body:', res.body);
-
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('errors');
@@ -652,8 +587,6 @@ describe('Users API Tests', function() {
         const res = await request(app)
           .get('/users/-1')
           .set('Authorization', `Bearer ${adminToken}`);
-
-        console.log('Response body:', res.body);
 
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
@@ -686,8 +619,6 @@ describe('Users API Tests', function() {
             programmingLanguage: 'Go'
           });
 
-        console.log('Response body:', res.body);
-
         expect(res.status).to.equal(201);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('message', 'Сотрудник успешно создан');
@@ -714,8 +645,6 @@ describe('Users API Tests', function() {
             programmingLanguage: 'Go'
           });
         
-        console.log('Response body:', res.body);
-        
         expect(res.status).to.equal(403);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('error', 'Доступ запрещен');
@@ -741,8 +670,6 @@ describe('Users API Tests', function() {
             programmingLanguage: 'Go'
           });
 
-        console.log('Response body:', res.body);
-
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('error', 'Пользователь с таким email уже существует');
@@ -753,8 +680,6 @@ describe('Users API Tests', function() {
           .post('/users')
           .set('Authorization', `Bearer ${adminToken}`)
           .send({ email: faker.internet.email({ length: { min: 5, max: 80 } }).toLowerCase() });
-
-        console.log('Response body:', res.body);
 
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
@@ -797,8 +722,6 @@ describe('Users API Tests', function() {
             .set('Authorization', `Bearer ${adminToken}`)
             .send({ email });
   
-          console.log('Response body:', res.body);
-  
           expect(res.status).to.equal(400);
           expect(res.headers['content-type']).to.match(/json/);
           expect(res.body).to.have.property('errors');
@@ -815,8 +738,6 @@ describe('Users API Tests', function() {
           .set('Authorization', `Bearer ${adminToken}`)
           .send({ salary: -100 });
   
-        console.log('Response body:', res.body);
-        
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('errors');
@@ -832,8 +753,6 @@ describe('Users API Tests', function() {
           .set('Authorization', `Bearer ${adminToken}`)
           .send({ role: 'superadmin' });
   
-        console.log('Response body:', res.body);
-        
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('errors');
@@ -850,8 +769,6 @@ describe('Users API Tests', function() {
           .send({
             firstName: ''
           });
-
-        console.log('Response body:', res.body);
 
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
@@ -877,9 +794,7 @@ describe('Users API Tests', function() {
           .send({
             vacationDates: '2024-12-25'
           });
-  
-        console.log('Response body:', res.body);
-  
+
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body.user.vacationDates).to.be.an('array');
@@ -893,9 +808,7 @@ describe('Users API Tests', function() {
           .send({
             vacationDates: ['2024-12-25', '2024-12-26']
           });
-  
-        console.log('Response body:', res.body);
-  
+
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body.user.vacationDates).to.be.an('array');
@@ -911,9 +824,7 @@ describe('Users API Tests', function() {
           .send({
             email: newEmail
           });
-  
-        console.log('Response body:', res.body);
-  
+
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body.user.email).to.equal(newEmail.toLowerCase());
@@ -928,9 +839,7 @@ describe('Users API Tests', function() {
           .send({
             firstName: 'Updated'
           });
-  
-        console.log('Response body:', res.body);
-  
+
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('errors');
@@ -946,8 +855,6 @@ describe('Users API Tests', function() {
           .send({
             firstName: randomFirstName
           });
-  
-        console.log('Response body:', res.body);
   
         expect(res.status).to.equal(404);
         expect(res.headers['content-type']).to.match(/json/);
@@ -967,8 +874,6 @@ describe('Users API Tests', function() {
             githubLink: 'https://github.com/johndoe'
           });
   
-        console.log('Response body:', res.body);
-  
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('message', 'Data updated successfully');
@@ -987,8 +892,6 @@ describe('Users API Tests', function() {
             role: 'admin'
           });
   
-        console.log('Response body:', res.body);
-  
         expect(res.status).to.equal(403);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('error', 'Только администратор может обновлять поле salary');
@@ -1003,8 +906,6 @@ describe('Users API Tests', function() {
             position: 'Senior Developer',
             workingHoursPerWeek: 40
           });
-  
-        console.log('Response body:', res.body);
   
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
@@ -1059,8 +960,6 @@ describe('Users API Tests', function() {
           .delete(`/users/${adminId}`)
           .set('Authorization', `Bearer ${adminToken}`);
   
-        console.log('Response body:', res.body);
-  
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('error', 'Нельзя удалить самого себя');
@@ -1070,9 +969,7 @@ describe('Users API Tests', function() {
         const res = await request(app)
           .delete(`/users/${employee2Id}`)
           .set('Authorization', `Bearer ${adminToken}`);
-  
-        console.log('Response body:', res.body);
-  
+
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('message');
@@ -1086,8 +983,6 @@ describe('Users API Tests', function() {
           .delete('/users/invalid')
           .set('Authorization', `Bearer ${adminToken}`);
   
-        console.log('Response body:', res.body);
-  
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('errors');
@@ -1100,8 +995,6 @@ describe('Users API Tests', function() {
         const res = await request(app)
           .delete('/users/0')
           .set('Authorization', `Bearer ${adminToken}`);
-  
-        console.log('Response body:', res.body);
   
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);

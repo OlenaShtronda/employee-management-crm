@@ -1,4 +1,4 @@
-// tests/project.test.js
+// tests/projects.test.js
 const request = require('supertest');
 const { expect } = require('chai');
 const { faker } = require('@faker-js/faker');
@@ -130,12 +130,10 @@ describe('Project API', () => {
   ============================ */
   describe('GET /projects', () => {
     describe('Success cases', () => {
-      it('Verify all projects are returned for admin', async () => {
+      it('Verify admin can retrieve projects', async () => {
         const res = await request(app)
           .get('/projects')
           .set('Authorization', `Bearer ${adminToken}`);
-  
-        console.log('Response body:', res.body);
   
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
@@ -146,12 +144,10 @@ describe('Project API', () => {
         expect(res.body.projects[0]).to.have.property('wage'); // Admin can see wage
       });
 
-      it('Verify all projects are returned for employee without wage field', async () => {
+      it('Verify employee can retrieve projects without wage', async () => {
         const res = await request(app)
           .get('/projects')
           .set('Authorization', `Bearer ${employeeToken}`);
-  
-        console.log('Response body:', res.body);
   
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
@@ -166,8 +162,6 @@ describe('Project API', () => {
         const res = await request(app)
           .get('/projects?active=true')
           .set('Authorization', `Bearer ${adminToken}`);
-  
-        console.log('Response body:', res.body);
   
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
@@ -186,8 +180,6 @@ describe('Project API', () => {
           .get(`/projects?search=${encodeURIComponent(searchName)}`)
           .set('Authorization', `Bearer ${adminToken}`);
   
-        console.log('Response body:', res.body);
-  
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body.projects).to.be.an('array').and.not.empty;
@@ -202,8 +194,6 @@ describe('Project API', () => {
           .get('/projects?page=1&limit=1')
           .set('Authorization', `Bearer ${adminToken}`);
 
-        console.log('Response body:', res.body);
-
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body.projects.length).to.equal(1);
@@ -214,8 +204,6 @@ describe('Project API', () => {
         const res = await request(app)
           .get('/projects?search=   ')
           .set('Authorization', `Bearer ${adminToken}`);
-
-        console.log('Response body:', res.body);
 
         // Should not crash and return valid response
         expect(res.status).to.equal(200);
@@ -232,8 +220,6 @@ describe('Project API', () => {
           .get('/projects?search=nonexistentprojectname')
           .set('Authorization', `Bearer ${adminToken}`);
 
-        console.log('Response body:', res.body);
-
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body.projects).to.be.an('array').that.is.empty;
@@ -244,8 +230,6 @@ describe('Project API', () => {
         const res = await request(app)
           .get('/projects?page=100&limit=10')
           .set('Authorization', `Bearer ${adminToken}`);
-
-        console.log('Response body:', res.body);
 
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
@@ -258,8 +242,6 @@ describe('Project API', () => {
         const res = await request(app)
           .get(`/projects?search=${encodeURIComponent(searchValue)}`)
           .set('Authorization', `Bearer ${adminToken}`);
-
-        console.log('Response body:', res.body);
 
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
@@ -277,8 +259,6 @@ describe('Project API', () => {
         const res = await request(app)
           .get('/projects');
 
-        console.log('Response body:', res.body);
-
         expect(res.status).to.equal(401);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('error');
@@ -289,8 +269,6 @@ describe('Project API', () => {
         const res = await request(app)
           .get('/projects')
           .set('Authorization', 'Bearer invalid.token.here');
-
-        console.log('Response body:', res.body);
 
         expect(res.status).to.equal(403);
         expect(res.headers['content-type']).to.match(/json/);
@@ -304,8 +282,6 @@ describe('Project API', () => {
         const res = await request(app)
           .get('/projects?active=yes')
           .set('Authorization', `Bearer ${adminToken}`);
-
-        console.log('Response body:', res.body);
 
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
@@ -322,8 +298,6 @@ describe('Project API', () => {
         const res = await request(app)
           .get('/projects?limit=1000')
           .set('Authorization', `Bearer ${adminToken}`);
-
-        console.log('Response body:', res.body);
 
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
@@ -344,8 +318,6 @@ describe('Project API', () => {
             .get(`/projects?page=${page}`)
             .set('Authorization', `Bearer ${adminToken}`);
             
-          console.log('Response body:', res.body);
-          
           expect(res.status).to.equal(400);
           expect(res.headers['content-type']).to.match(/json/);
           expect(res.body).to.have.property('errors');
@@ -364,8 +336,6 @@ describe('Project API', () => {
             .get(`/projects?limit=${limit}`)
             .set('Authorization', `Bearer ${adminToken}`);
     
-          console.log('Response body:', res.body);
-    
           expect(res.status).to.equal(400);
           expect(res.headers['content-type']).to.match(/json/);
           expect(res.body).to.have.property('errors');
@@ -381,8 +351,6 @@ describe('Project API', () => {
           .get('/projects?page=abc')
           .set('Authorization', `Bearer ${adminToken}`);
 
-        console.log('Response body:', res.body);
-          
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('errors');
@@ -396,8 +364,6 @@ describe('Project API', () => {
         const res = await request(app)
           .get('/projects?limit=abc')
           .set('Authorization', `Bearer ${adminToken}`);
-
-        console.log('Response body:', res.body);
 
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
@@ -414,13 +380,11 @@ describe('Project API', () => {
   ============================ */
   describe('GET /projects/:id', () => {
     describe('Success cases', () => {
-      it('Verify admin can get a single project with wage visible', async () => {
+      it('Verify admin can get a single project with wage', async () => {
         const res = await request(app)
           .get(`/projects/${testProjectId}`)
           .set('Authorization', `Bearer ${adminToken}`);
           
-        console.log('Response body:', res.body);
-  
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('id');
@@ -428,12 +392,10 @@ describe('Project API', () => {
         expect(res.body).to.have.property('wage'); // Admin can see wage
       });
   
-      it('Verify employee can get a single project without wage visible', async () => {
+      it('Verify employee can get a single project without wage', async () => {
         const res = await request(app)
           .get(`/projects/${testProjectId}`)
           .set('Authorization', `Bearer ${employeeToken}`);
-  
-        console.log('Response body:', res.body);
   
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
@@ -449,8 +411,6 @@ describe('Project API', () => {
           .get('/projects/99999')
           .set('Authorization', `Bearer ${adminToken}`);
   
-        console.log('Response body:', res.body);
-  
         expect(res.status).to.equal(404);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('error', 'Project not found');
@@ -460,8 +420,6 @@ describe('Project API', () => {
         const res = await request(app)
           .get('/projects/invalid')
           .set('Authorization', `Bearer ${adminToken}`);
-  
-        console.log('Response body:', res.body);
   
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
@@ -489,8 +447,6 @@ describe('Project API', () => {
             active: true
           });
   
-        console.log('Response body:', res.body);
-  
         expect(res.status).to.equal(201);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('message', 'Project created successfully');
@@ -510,8 +466,6 @@ describe('Project API', () => {
             description: randomProjectDescription
           });
   
-        console.log('Response body:', res.body);
-  
         expect(res.status).to.equal(401);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('error', 'Токен не предоставлен');
@@ -525,8 +479,6 @@ describe('Project API', () => {
             name: randomProjectName,
             description: randomProjectDescription
           });
-  
-        console.log('Response body:', res.body);
   
         expect(res.status).to.equal(403);
         expect(res.headers['content-type']).to.match(/json/);
@@ -543,8 +495,6 @@ describe('Project API', () => {
             name: 'A', // Too short
             description: 'Short' // Too short
           });
-  
-        console.log('Response body:', res.body);
   
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
@@ -571,8 +521,6 @@ describe('Project API', () => {
             description: duplicateProject.description
           });
   
-        console.log('Response body:', res.body);
-  
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('error', 'Project with this name already exists');
@@ -585,9 +533,7 @@ describe('Project API', () => {
           .send({
             description: randomProjectDescription
           });
-  
-        console.log('Response body:', res.body);
-  
+
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('errors');
@@ -613,8 +559,6 @@ describe('Project API', () => {
             name: randomProjectName
           });
   
-        console.log('Response body:', res.body);
-  
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('errors');
@@ -637,9 +581,7 @@ describe('Project API', () => {
           .post('/projects')
           .set('Authorization', `Bearer ${adminToken}`)
           .send({});
-  
-        console.log('Response body:', res.body);
-  
+
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('errors');
@@ -677,8 +619,6 @@ describe('Project API', () => {
           .set('Authorization', `Bearer ${adminToken}`)
           .send(updatedData);
   
-        console.log('Response body:', res.body);
-  
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('message', 'Project updated successfully');
@@ -698,8 +638,6 @@ describe('Project API', () => {
             description: faker.lorem.paragraphs(faker.number.int({ min: 1, max: 3 })).slice(0, 5000)
           });
   
-        console.log('Response body:', res.body);
-  
         expect(res.status).to.equal(401);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('error', 'Токен не предоставлен');
@@ -713,8 +651,6 @@ describe('Project API', () => {
             name: faker.commerce.productName().slice(0, 100),
             description: faker.lorem.paragraphs(faker.number.int({ min: 1, max: 3 })).slice(0, 5000)
           });
-  
-        console.log('Response body:', res.body);
   
         expect(res.status).to.equal(403);
         expect(res.headers['content-type']).to.match(/json/);
@@ -730,8 +666,6 @@ describe('Project API', () => {
             name: faker.commerce.productName().slice(0, 100)
           });
   
-        console.log('Response body:', res.body);
-  
         expect(res.status).to.equal(403);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('error', 'Access denied');
@@ -746,8 +680,6 @@ describe('Project API', () => {
           .send({
             description: 'Short' // Too short
           });
-  
-        console.log('Response body:', res.body);
   
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
@@ -768,8 +700,6 @@ describe('Project API', () => {
             description: faker.lorem.paragraphs(faker.number.int({ min: 1, max: 3 })).slice(0, 5000)
           });
   
-        console.log('Response body:', res.body);
-  
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('errors');
@@ -786,8 +716,6 @@ describe('Project API', () => {
           .send({ 
             name: faker.commerce.productName().slice(0, 100) 
           });
-  
-        console.log('Response body:', res.body);
   
         expect(res.status).to.equal(404);
         expect(res.headers['content-type']).to.match(/json/);
@@ -822,8 +750,6 @@ describe('Project API', () => {
             employeeIds: [employeeId]
           });
   
-        console.log('Response body:', res.body);
-  
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('message', 'Employees assigned to project successfully');
@@ -837,8 +763,6 @@ describe('Project API', () => {
             employeeIds: []
           });
   
-        console.log('Response body:', res.body);
-  
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('message', 'All employees removed from project');
@@ -851,8 +775,6 @@ describe('Project API', () => {
           .send({
             employeeId: employeeId
           });
-
-        console.log('Response body:', res.body);
 
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
@@ -869,8 +791,6 @@ describe('Project API', () => {
             employeeIds: [employeeId]
           });
   
-        console.log('Response body:', res.body);
-  
         expect(res.status).to.equal(403);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('error', 'Access denied');
@@ -886,8 +806,6 @@ describe('Project API', () => {
             employeeIds: [99999]
           });
   
-        console.log('Response body:', res.body);
-  
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('error', 'Some employees not found');
@@ -901,8 +819,6 @@ describe('Project API', () => {
           .send({
             employeeId: 'invalid'
           });
-  
-        console.log('Response body:', res.body);
   
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
@@ -921,8 +837,6 @@ describe('Project API', () => {
             employeeId: -5
           });
   
-        console.log('Response body:', res.body);
-  
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('errors');
@@ -939,8 +853,6 @@ describe('Project API', () => {
           .send({
             employeeId: 0
           });
-  
-        console.log('Response body:', res.body);
   
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
@@ -962,8 +874,6 @@ describe('Project API', () => {
           .get(`/projects/${testProjectId}/employees`)
           .set('Authorization', `Bearer ${adminToken}`);
   
-        console.log('Response body:', res.body);
-  
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('employees');
@@ -974,8 +884,6 @@ describe('Project API', () => {
         const res = await request(app)
           .get(`/projects/${testProjectId}/employees`)
           .set('Authorization', `Bearer ${employeeToken}`);
-  
-        console.log('Response body:', res.body);
   
         expect(res.status).to.equal(200);
         if (res.body.employees.length > 0) {
@@ -990,8 +898,6 @@ describe('Project API', () => {
           .get('/projects/99999/employees')
           .set('Authorization', `Bearer ${adminToken}`);
   
-        console.log('Response body:', res.body);
-  
         expect(res.status).to.equal(404);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('error', 'Project not found');
@@ -1002,8 +908,6 @@ describe('Project API', () => {
         const res = await request(app)
           .get('/projects/invalid/employees')
           .set('Authorization', `Bearer ${adminToken}`);
-  
-        console.log('Response body:', res.body);
   
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
@@ -1025,8 +929,6 @@ describe('Project API', () => {
           .delete(`/projects/${testProjectId}/employees/${employeeId}`)
           .set('Authorization', `Bearer ${adminToken}`);
   
-        console.log('Response body:', res.body);
-  
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('message', 'Employee removed from project successfully');
@@ -1038,8 +940,6 @@ describe('Project API', () => {
         const res = await request(app)
           .delete(`/projects/${testProjectId}/employees/invalid`)
           .set('Authorization', `Bearer ${adminToken}`);
-  
-        console.log('Response body:', res.body);
   
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
@@ -1061,8 +961,6 @@ describe('Project API', () => {
           .delete(`/projects/${testProjectId}`)
           .set('Authorization', `Bearer ${adminToken}`);
   
-        console.log('Response body:', res.body);
-  
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('message', 'Project deleted successfully');
@@ -1075,8 +973,6 @@ describe('Project API', () => {
           .delete(`/projects/${testProjectId}`)
           .set('Authorization', `Bearer ${adminToken}`);
   
-        console.log('Response body:', res.body);
-  
         expect(res.status).to.equal(404);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('error', 'Project not found');
@@ -1086,8 +982,6 @@ describe('Project API', () => {
         const res = await request(app)
           .delete(`/projects/${testProjectId}`)
           .set('Authorization', `Bearer ${employeeToken}`);
-  
-        console.log('Response body:', res.body);
   
         expect(res.status).to.equal(403);
         expect(res.headers['content-type']).to.match(/json/);

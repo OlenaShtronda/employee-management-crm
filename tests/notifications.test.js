@@ -1,30 +1,31 @@
-// tests/notification.test.js
+// tests/notifications.test.js
 const request = require('supertest');
 const { expect } = require('chai');
 const { faker } = require('@faker-js/faker');
 const app = require('../app');
 const db = require('../models');
 
-let adminEmail;
-let adminPassword;
-let adminId;
-let adminToken;
-let employee;
-let employeeEmail;
-let employeePassword;
-let employeeId;
-let employeeToken;
 
-// Faker values
-let randomFirstName;
-let randomLastName;
-let randomMiddleName;
-let randomBirthDate;
-let randomPhone;
+describe('Notification API Tests', () => {
+  let adminEmail;
+  let adminPassword;
+  let adminId;
+  let adminToken;
+  let employee;
+  let employeeEmail;
+  let employeePassword;
+  let employeeId;
+  let employeeToken;
+  
+  // Faker values
+  let randomFirstName;
+  let randomLastName;
+  let randomMiddleName;
+  let randomBirthDate;
+  let randomPhone;
+  
+  const notifications = [];
 
-const notifications = [];
-
-describe('Notification API', () => {
   before(async () => {
     // Drop and recreate schema to ensure clean state
     await db.sequelize.query('DROP SCHEMA IF EXISTS public CASCADE;');
@@ -129,12 +130,10 @@ describe('Notification API', () => {
   ============================ */
   describe('GET /notifications', () => {
     describe('Success cases', () => {
-      it('Verify the list of notifications is returned for admin', async () => {
+      it('Verify admin can retrieve notifications', async () => {
         const res = await request(app)
           .get('/notifications')
           .set('Authorization', `Bearer ${adminToken}`);
-  
-        console.log('Response body:', res.body);
   
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
@@ -154,8 +153,6 @@ describe('Notification API', () => {
           .get('/notifications?page=1&limit=2')
           .set('Authorization', `Bearer ${adminToken}`);
 
-        console.log('Response body:', res.body);
-
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body.notifications).to.have.lengthOf(2);
@@ -168,8 +165,6 @@ describe('Notification API', () => {
           .get('/notifications?page=100&limit=5')
           .set('Authorization', `Bearer ${adminToken}`);
 
-        console.log('Response body:', res.body);
-
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body.notifications).to.be.an('array').that.is.empty;
@@ -181,8 +176,6 @@ describe('Notification API', () => {
         const res = await request(app)
           .get(`/notifications?type=${type}`)
           .set('Authorization', `Bearer ${adminToken}`);
-  
-        console.log('Response body:', res.body);
   
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
@@ -197,8 +190,6 @@ describe('Notification API', () => {
         const res = await request(app)
           .get('/notifications?type=nonexistenttype')
           .set('Authorization', `Bearer ${adminToken}`);
-
-        console.log('Response body:', res.body);
 
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
@@ -216,8 +207,6 @@ describe('Notification API', () => {
               .get(`/notifications?sortBy=${field}&order=${order}`)
               .set('Authorization', `Bearer ${adminToken}`);
 
-            console.log('Response body:', res.body);
-            
             expect(res.status).to.equal(200);
             expect(res.body.notifications).to.be.an('array');
 
@@ -235,8 +224,6 @@ describe('Notification API', () => {
         const res = await request(app)
           .get('/notifications');
   
-        console.log('Response body:', res.body);
-  
         expect(res.status).to.equal(401);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('error', 'Токен не предоставлен');
@@ -246,8 +233,6 @@ describe('Notification API', () => {
         const res = await request(app)
           .get('/notifications')
           .set('Authorization', `Bearer invalidToken`);
-  
-        console.log('Response body:', res.body);
   
         expect(res.status).to.equal(403);
         expect(res.headers['content-type']).to.match(/json/);
@@ -264,8 +249,6 @@ describe('Notification API', () => {
             .get(`/notifications?page=${page}`)
             .set('Authorization', `Bearer ${adminToken}`);
             
-          console.log('Response body:', res.body);
-          
           expect(res.status).to.equal(400);
           expect(res.headers['content-type']).to.match(/json/);
           expect(res.body).to.have.property('errors');
@@ -284,8 +267,6 @@ describe('Notification API', () => {
             .get(`/notifications?limit=${limit}`)
             .set('Authorization', `Bearer ${adminToken}`);
     
-          console.log('Response body:', res.body);
-    
           expect(res.status).to.equal(400);
           expect(res.headers['content-type']).to.match(/json/);
           expect(res.body).to.have.property('errors');
@@ -301,8 +282,6 @@ describe('Notification API', () => {
           .get('/notifications?sortBy=invalidField')
           .set('Authorization', `Bearer ${adminToken}`);
 
-        console.log('Response body:', res.body);
-
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('errors');
@@ -313,19 +292,17 @@ describe('Notification API', () => {
       });
     });
   });
-  /* ============================
+  /* =======================================
      PATCH /notifications/:id/mark-as-read
-  ============================ */
+  ======================================== */
   describe('PATCH /notifications/:id/mark-as-read', () => {
     describe('Success cases', () => {
-      it('Verify notification is marked as read', async () => {
+      it('Verify admin can mark notification as read', async () => {
         const notificationToMark = notifications[0];
   
         const res = await request(app)
           .patch(`/notifications/${notificationToMark.id}/mark-as-read`)
           .set('Authorization', `Bearer ${adminToken}`);
-  
-        console.log('Response body:', res.body);
   
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
@@ -346,8 +323,6 @@ describe('Notification API', () => {
           .patch(`/notifications/${notificationToMark.id}/mark-as-read`)
           .set('Authorization', `Bearer ${adminToken}`);
   
-        console.log('Response body:', res.body);
-  
         expect(res.status).to.equal(200);
         expect(res.body).to.have.property('message', 'Уведомление отмечено как прочитанное');
   
@@ -363,8 +338,6 @@ describe('Notification API', () => {
         const res = await request(app)
           .patch(`/notifications/${notificationToMark.id}/mark-as-read`);
   
-        console.log('Response body:', res.body);
-  
         expect(res.status).to.equal(401);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('error', 'Токен не предоставлен');
@@ -377,8 +350,6 @@ describe('Notification API', () => {
           .patch(`/notifications/${notificationToMark.id}/mark-as-read`)
           .set('Authorization', `Bearer ${employeeToken}`);
   
-        console.log('Response body:', res.body);
-  
         expect(res.status).to.equal(403);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('error', 'Недействительный токен');
@@ -390,8 +361,6 @@ describe('Notification API', () => {
         const res = await request(app)
           .patch(`/notifications/99999/mark-as-read`)
           .set('Authorization', `Bearer ${adminToken}`);
-  
-        console.log('Response body:', res.body);
   
         expect(res.status).to.equal(404);
         expect(res.headers['content-type']).to.match(/json/);

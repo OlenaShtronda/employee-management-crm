@@ -93,8 +93,6 @@ describe('Authentication API Tests', () => {
           secretWord: process.env.SECRET_WORD
         });
 
-      console.log('Response body:', res.body);
-
       expect(res.status).to.equal(201);
       expect(res.headers['content-type']).to.match(/json/);
       expect(res.body).to.have.property('message');
@@ -121,8 +119,6 @@ describe('Authentication API Tests', () => {
           role: 'admin'
         });
 
-      console.log('Response body:', res.body);
-
       expect(res.status).to.equal(403);
       expect(res.headers['content-type']).to.match(/json/);
       expect(res.body).to.have.property('error');
@@ -137,8 +133,6 @@ describe('Authentication API Tests', () => {
         .send({
           email: faker.internet.email().toLowerCase()
         });
-
-      console.log('Response body:', res.body);
 
       expect(res.status).to.equal(400);
       expect(res.headers['content-type']).to.match(/json/);
@@ -193,8 +187,6 @@ describe('Authentication API Tests', () => {
             programmingLanguage: 'JavaScript'
           });
 
-        console.log('Response body:', res.body);
-
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body.errors).to.have.lengthOf(1);
@@ -218,8 +210,6 @@ describe('Authentication API Tests', () => {
           phone: randomPhone,
           programmingLanguage: 'JavaScript'
         });
-
-        console.log('Response body:', res.body);
 
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
@@ -253,8 +243,6 @@ describe('Authentication API Tests', () => {
             programmingLanguage: 'JavaScript'
           });
     
-        console.log('Response body:', res.body);
-
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('errors');
@@ -282,8 +270,6 @@ describe('Authentication API Tests', () => {
             programmingLanguage: 'JavaScript'
           });
     
-        console.log('Response body:', res.body);
-
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('errors');
@@ -310,8 +296,6 @@ describe('Authentication API Tests', () => {
             phone: randomPhone,
             programmingLanguage: 'JavaScript'
           });
-
-        console.log('Response body:', res.body);
 
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
@@ -340,8 +324,6 @@ describe('Authentication API Tests', () => {
             programmingLanguage: 'JavaScript'
           });
 
-        console.log('Response body:', res.body);
-
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('errors');
@@ -369,8 +351,6 @@ describe('Authentication API Tests', () => {
             programmingLanguage: 'JavaScript'
           });
 
-        console.log('Response body:', res.body);
-
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('errors');
@@ -397,8 +377,6 @@ describe('Authentication API Tests', () => {
           programmingLanguage: 'JavaScript'
         });
 
-      console.log('Response body:', res.body);
-
       expect(res.status).to.equal(400);
       expect(res.headers['content-type']).to.match(/json/);
       expect(res.body).to.have.property('errors');
@@ -423,8 +401,6 @@ describe('Authentication API Tests', () => {
           phone: randomPhone,
           programmingLanguage: tooLongProgrammingLanguage
         });
-
-      console.log('Response body:', res.body);
 
       expect(res.status).to.equal(400);
       expect(res.headers['content-type']).to.match(/json/);
@@ -451,8 +427,6 @@ describe('Authentication API Tests', () => {
           secretWord: 'WRONG_SECRET'
         });
 
-      console.log('Response body:', res.body);
-
       expect(res.status).to.equal(403);
       expect(res.headers['content-type']).to.match(/json/);
       expect(res.body).to.have.property('error');
@@ -473,8 +447,6 @@ describe('Authentication API Tests', () => {
           programmingLanguage: 'JavaScript',
           role: 'admin'
         });
-
-      console.log('Response body:', res.body);
 
       expect(res.status).to.equal(403);
       expect(res.headers['content-type']).to.match(/json/);
@@ -498,8 +470,6 @@ describe('Authentication API Tests', () => {
           role: 'employee'
         });
 
-      console.log('Response body:', res.body);
-      
       expect(res.status).to.equal(201);
 
       // Verify the user was created without the injected salary
@@ -522,19 +492,15 @@ describe('Authentication API Tests', () => {
           programmingLanguage: 'Ruby'
         });
 
-      console.log('Response body:', res.body);
-      
       expect(res.status).to.equal(400);
       expect(res.headers['content-type']).to.match(/json/);
       expect(res.body).to.have.property('error');
       expect(res.body.error).to.equal('Пользователь с таким email уже существует');
     });
   });
-
   /* =========================
      LOGIN
   ========================== */
-
   describe('POST /login', () => {
     it('Verify login with valid credentials', async () => {
       const res = await request(app)
@@ -543,8 +509,6 @@ describe('Authentication API Tests', () => {
           email: employeeEmail,
           password: employeePassword,
         });
-
-      console.log('Response body:', res.body);
 
       expect(res.status).to.equal(200);
       expect(res.headers['content-type']).to.match(/json/);
@@ -564,8 +528,6 @@ describe('Authentication API Tests', () => {
           password: 'wrongpassword'
         });
 
-      console.log('Response body:', res.body);
-
       expect(res.status).to.equal(400);
       expect(res.headers['content-type']).to.match(/json/);
       expect(res.body).to.have.property('error');
@@ -577,8 +539,6 @@ describe('Authentication API Tests', () => {
       const res = await request(app)
         .post('/login')
         .send({});
-
-      console.log('Response body:', res.body);
 
       expect(res.status).to.equal(400);
       expect(res.headers['content-type']).to.match(/json/);
@@ -613,8 +573,6 @@ describe('Authentication API Tests', () => {
             password: faker.internet.password({ length: 12 })
           });
 
-        console.log('Response body:', res.body);
-
         expect(res.status).to.equal(400);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('errors');
@@ -633,8 +591,6 @@ describe('Authentication API Tests', () => {
           password: ''
         });
 
-      console.log('Response body:', res.body);
-
       expect(res.status).to.equal(400);
       expect(res.headers['content-type']).to.match(/json/);
       expect(res.body).to.have.property('errors');
@@ -651,8 +607,6 @@ describe('Authentication API Tests', () => {
           email: adminEmail.toUpperCase(),
           password: adminPassword
         });
-
-      console.log('Response body:', res.body);
 
       expect(res.status).to.equal(200);
       expect(res.headers['content-type']).to.match(/json/);
