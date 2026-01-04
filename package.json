@@ -9,7 +9,13 @@
     "build:swagger": "node generate-swagger.js && npx @redocly/cli build-docs swagger.json -o docs/index.html",
     "start": "cross-env NODE_ENV=production node app.js",
     "dev": "cross-env NODE_ENV=development nodemon app.js",
+
     "test": "cross-env NODE_ENV=test mocha tests/**/*.test.js --exit",
+    "test:smoke": "cross-env NODE_ENV=test mocha tests/**/*.smoke.test.js --exit",
+    "test:docker:smoke": "docker compose run --rm test npm run test:smoke",
+    "test:regression": "cross-env NODE_ENV=test mocha tests/**/*.test.js --exclude tests/**/*.smoke.test.js --exit",
+    "test:docker:regression": "docker compose run --rm test npm run test:regression",
+    
     "seed:prod": "cross-env NODE_ENV=production npx sequelize-cli db:seed:all",
     "seed:dev": "cross-env NODE_ENV=development npx sequelize-cli db:seed:all",
     "clear-db:prod": "cross-env NODE_ENV=production npx sequelize-cli db:seed:undo:all",
@@ -29,7 +35,6 @@
   "author": "Alex",
   "license": "MIT",
   "dependencies": {
-    "@faker-js/faker": "^9.0.1",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",
@@ -48,6 +53,7 @@
     "winston": "^3.9.0"
   },
   "devDependencies": {
+    "@faker-js/faker": "^10.1.0",
     "@redocly/cli": "^2.8.0",
     "chai": "^4.3.7",
     "mocha": "^10.2.0",
