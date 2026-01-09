@@ -1,9 +1,8 @@
 // tests/notifications.test.js
 const request = require('supertest');
 const { expect } = require('chai');
-const { faker } = require('@faker-js/faker');
-const app = require('../app');
-const db = require('../models');
+const app = require('../../app');
+const db = require('../../models');
 
 
 describe('Notification API Tests', () => {
@@ -23,10 +22,12 @@ describe('Notification API Tests', () => {
   let randomMiddleName;
   let randomBirthDate;
   let randomPhone;
+  let faker;
   
   const notifications = [];
 
   before(async () => {
+    ({ faker } = await import('@faker-js/faker'));
     // Drop and recreate schema to ensure clean state
     await db.sequelize.query('DROP SCHEMA IF EXISTS public CASCADE;');
     await db.sequelize.query('CREATE SCHEMA public;');
@@ -220,7 +221,7 @@ describe('Notification API Tests', () => {
     });
 
     describe('Authentication / Authorization errors', () => {
-      it('Verify notifications are not returned without token', async () => {
+      it('Verify notifications access is denied without authentication token', async () => {
         const res = await request(app)
           .get('/notifications');
   
@@ -229,7 +230,7 @@ describe('Notification API Tests', () => {
         expect(res.body).to.have.property('error', 'Токен не предоставлен');
       });
   
-      it('Verify error is returned for malformed token', async () => {
+      it('Verify notifications access is denied with malformed token', async () => {
         const res = await request(app)
           .get('/notifications')
           .set('Authorization', `Bearer invalidToken`);
@@ -313,7 +314,7 @@ describe('Notification API Tests', () => {
         expect(notification.isRead).to.be.true;
       });
 
-      it('Verify that marking an already read notification does not fail', async () => {
+      it('Verify marking already read notification does not change state or return error', async () => {
         const notificationToMark = notifications[2];
   
         // Mark as read first

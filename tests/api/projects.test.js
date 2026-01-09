@@ -1,9 +1,8 @@
 // tests/projects.test.js
 const request = require('supertest');
 const { expect } = require('chai');
-const { faker } = require('@faker-js/faker');
-const app = require('../app');
-const db = require('../models');
+const app = require('../../app');
+const db = require('../../models');
 
 let adminEmail;
 let adminPassword;
@@ -23,11 +22,13 @@ let randomPhone;
 let randomProjectName;
 let randomProjectDescription;
 let randomProjectWage;
+let faker;
 
 const projects = [];
 
 describe('Project API', () => {
   before(async function () {
+    ({ faker } = await import('@faker-js/faker'));
     // Drop and recreate schema to ensure clean state
     await db.sequelize.query('DROP SCHEMA IF EXISTS public CASCADE;');
     await db.sequelize.query('CREATE SCHEMA public;');

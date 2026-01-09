@@ -59,7 +59,7 @@ services:
 
   test:
     build: .
-    container_name: my_test
+    container_name: my_api_tests
     environment:
       - NODE_ENV=test
       - DB_HOST=db
@@ -75,7 +75,22 @@ services:
     volumes:
       - ./:/app
       - /app/node_modules
-    command: sh -c "npx sequelize-cli db:create --env test && npx sequelize-cli db:migrate --env test && npm run test"
+    # command: sh -c "npx sequelize-cli db:create --env test && npx sequelize-cli db:migrate --env test && npm run test"
+    command: sh -c "npx sequelize-cli db:migrate --env test && npm run test"
+
+  playwright:
+    image: mcr.microsoft.com/playwright:v1.57.0-noble
+    container_name: my_e2e_tests
+    working_dir: /e2e
+    volumes:
+      - ./:/e2e
+    environment:
+      - E2E_BASE_URL=http://frontend:5173
+      - CI=true
+    depends_on:
+      - frontend
+      - app
+    command: npx playwright test
 
 volumes:
   db_data:

@@ -3,7 +3,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.removeColumn('Users', 'currentProject', { schema: 'public' });
+    // await queryInterface.removeColumn('Users', 'currentProject', { schema: 'public' });
   },
 
   down: async (queryInterface, Sequelize) => {

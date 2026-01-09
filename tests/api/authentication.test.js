@@ -1,9 +1,8 @@
 // tests/authentication.test.js
 const request = require('supertest');
 const { expect } = require('chai');
-const { faker } = require('@faker-js/faker');
-const app = require('../app');
-const db = require('../models');
+const app = require('../../app');
+const db = require('../../models');
 
 describe('Authentication API Tests', () => {
   let adminEmail;
@@ -18,8 +17,10 @@ describe('Authentication API Tests', () => {
   let randomMiddleName;
   let randomBirthDate;
   let randomPhone;
+  let faker;
 
   before(async () => {
+    ({ faker } = await import('@faker-js/faker'));
     // Drop and recreate schema to ensure clean state
     await db.sequelize.query('DROP SCHEMA IF EXISTS public CASCADE;');
     await db.sequelize.query('CREATE SCHEMA public;');
@@ -72,11 +73,9 @@ describe('Authentication API Tests', () => {
         programmingLanguage: 'Python'
       });
   });
-
   /* =========================
      REGISTRATION
   ========================== */
-
   describe('POST /register', () => {
     it('Verify registering a new employee', async () => {
       const res = await request(app)
@@ -280,7 +279,7 @@ describe('Authentication API Tests', () => {
       };
     });
 
-    it('sVerify registration fails with invalid lastName length', async () => {
+    it('Verify registration fails with invalid lastName length', async () => {
       const invalidLastNames = ['D', 'D'.repeat(41)];
 
       for (const lastName of invalidLastNames) {

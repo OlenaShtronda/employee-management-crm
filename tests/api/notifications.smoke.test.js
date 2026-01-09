@@ -1,9 +1,8 @@
 // tests/notifications.smoke.test.js
 const request = require('supertest');
 const { expect } = require('chai');
-const { faker } = require('@faker-js/faker');
-const app = require('../app');
-const db = require('../models');
+const app = require('../../app');
+const db = require('../../models');
 
 
 describe('SMOKE: Notification API Tests', () => {
@@ -23,8 +22,10 @@ describe('SMOKE: Notification API Tests', () => {
   let randomMiddleName;
   let randomBirthDate;
   let randomPhone;
+  let faker;
   
   before(async () => {
+    ({ faker } = await import('@faker-js/faker'));
     // Drop and recreate schema to ensure clean state
     await db.sequelize.query('DROP SCHEMA IF EXISTS public CASCADE;');
     await db.sequelize.query('CREATE SCHEMA public;');

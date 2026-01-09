@@ -1,6 +1,6 @@
 // tests/configuration.test.js
 const { expect } = require('chai');
-const config = require('../config/appConfig');
+const config = require('../../config/appConfig');
 
 describe('Configuration security', () => {
   it('should have JWT_SECRET configured', () => {

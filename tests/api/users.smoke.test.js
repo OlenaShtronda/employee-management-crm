@@ -1,19 +1,17 @@
-// tests/projects.smoke.test.js
 const request = require('supertest');
 const { expect } = require('chai');
-const { faker } = require('@faker-js/faker');
-const app = require('../app');
-const db = require('../models');
+const app = require('../../app');
+const db = require('../../models');
 
-describe('SMOKE: Project API Tests', () => {
+describe('SMOKE: Users API Tests', function () {
   let adminEmail;
   let adminPassword;
   let adminToken;
+  let adminId;
   let employeeEmail;
   let employeePassword;
   let employeeToken;
   let employeeId;
-  let testProjectId;
 
   // Faker values
   let randomFirstName;
@@ -21,12 +19,12 @@ describe('SMOKE: Project API Tests', () => {
   let randomMiddleName;
   let randomBirthDate;
   let randomPhone;
-  let randomProjectName;
-  let randomProjectDescription;
-  let randomProjectWage;
 
-  before(async () => {
-    // Drop and recreate schema to ensure clean state
+  before(async function () {
+    ({ faker } = await import('@faker-js/faker'));
+    this.timeout(30000);
+
+    // Recreate schema for clean state
     await db.sequelize.query('DROP SCHEMA IF EXISTS public CASCADE;');
     await db.sequelize.query('CREATE SCHEMA public;');
     await db.sequelize.sync({ force: true });
@@ -37,15 +35,12 @@ describe('SMOKE: Project API Tests', () => {
     employeeEmail = faker.internet.email({ length: { min: 5, max: 80 } }).toLowerCase();
     employeePassword = faker.internet.password({ length: 12 });
 
-    // Common faker data
+    // Common faker data for names, birthdate, phone
     randomFirstName = faker.person.firstName({ length: { min: 2, max: 40 } });
     randomLastName = faker.person.lastName({ length: { min: 2, max: 40 } });
     randomMiddleName = faker.person.middleName({ length: { min: 2, max: 40 } });
     randomBirthDate = faker.date.birthdate({ min: 1950, max: 1985, mode: 'year' }).toISOString().split('T')[0];
     randomPhone = faker.phone.number('+##########');
-    randomProjectName = faker.commerce.productName().slice(0, 100);
-    randomProjectDescription = faker.lorem.paragraphs(faker.number.int({ min: 1, max: 3 })).slice(0, 5000);
-    randomProjectWage = faker.number.int({ min: 10, max: 5000 });
 
     // Create admin
     await request(app)
@@ -63,7 +58,9 @@ describe('SMOKE: Project API Tests', () => {
         secretWord: process.env.SECRET_WORD
       });
 
-    // Login admin
+    const adminUser = await db.User.findOne({ where: { email: adminEmail } });
+    adminId = adminUser.id;
+    
     const adminRes = await request(app)
       .post('/login')
       .send({
@@ -90,7 +87,6 @@ describe('SMOKE: Project API Tests', () => {
         registrationDate: '2021-01-01'
       });
 
-    // Login employee
     const employeeRes = await request(app)
       .post('/login')
       .send({
@@ -102,95 +98,75 @@ describe('SMOKE: Project API Tests', () => {
 
     const empUser = await db.User.findOne({ where: { email: employeeEmail } });
     employeeId = empUser.id;
-
-    // Create one project
+  });
+  /* ============================
+     GET /users
+  ============================ */
+  it('Verify all users are returned for admin', async () => {
     const res = await request(app)
-      .post('/projects')
+      .get('/users')
+      .set('Authorization', `Bearer ${adminToken}`);
+    
+    expect(res.status).to.equal(200);
+    expect(res.body).to.have.property('users');
+    expect(res.body.users).to.be.an('array').that.is.not.empty;
+  });
+  /* ============================
+     GET /profile
+  ============================ */
+  it('Verify employee can get own profile', async () => {
+    const res = await request(app)
+      .get('/profile')
+      .set('Authorization', `Bearer ${employeeToken}`);
+
+    expect(res.status).to.equal(200);
+    expect(res.body).to.have.property('email', employeeEmail);
+    expect(res.body).to.have.property('role', 'employee');
+  });
+  /* ============================
+     POST /users
+  ============================ */
+  it('Verify admin can create an employee', async () => {
+    const newEmail = faker.internet.email({ length: { min: 5, max: 80 } }).toLowerCase();
+    const res = await request(app)
+      .post('/users')
       .set('Authorization', `Bearer ${adminToken}`)
       .send({
-        name: randomProjectName,
-        description: randomProjectDescription,
-        wage: randomProjectWage,
-        active: true
+        email: newEmail,
+        password: faker.internet.password({ length: 12 }),
+        firstName: randomFirstName,
+        lastName: randomLastName,
+        middleName: randomMiddleName,
+        birthDate: randomBirthDate,
+        phone: randomPhone,
+        programmingLanguage: 'JavaScript'
       });
 
-    testProjectId = res.body.project.id;
+    expect(res.status).to.equal(201);
+    expect(res.body).to.have.property('user');
+    expect(res.body.user).to.have.property('email', newEmail);
+    expect(res.body).to.have.property('message', 'Сотрудник успешно создан');
   });
   /* ============================
-     GET /projects
+     GET /users/:id
   ============================ */
-  it('Verify admin can retrieve projects', async () => {
+  it('Verify admin can get user by ID', async () => {
     const res = await request(app)
-      .get('/projects')
+      .get(`/users/${employeeId}`)
       .set('Authorization', `Bearer ${adminToken}`);
 
     expect(res.status).to.equal(200);
-    expect(res.body.projects).to.be.an('array').that.is.not.empty;
-    expect(res.body.projects[0]).to.have.property('wage');
-  });
-
-  it('Verify employee can retrieve projects without wage', async () => {
-    const res = await request(app)
-      .get('/projects')
-      .set('Authorization', `Bearer ${employeeToken}`);
-
-    expect(res.status).to.equal(200);
-    expect(res.body.projects).to.be.an('array').that.is.not.empty;
-    expect(res.body.projects[0]).to.not.have.property('wage');
+    expect(res.body).to.have.property('id', employeeId);
   });
   /* ============================
-     GET /projects/:id
+     DELETE /users/:id
   ============================ */
-  it('Verify admin can get a single project with wage', async () => {
+  it('Verify admin can delete employee', async () => {
     const res = await request(app)
-      .get(`/projects/${testProjectId}`)
+      .delete(`/users/${employeeId}`)
       .set('Authorization', `Bearer ${adminToken}`);
 
     expect(res.status).to.equal(200);
-    expect(res.body).to.have.property('id', testProjectId);
-    expect(res.body).to.have.property('wage');
-  });
-
-  it('Verify employee can get a single project without wage', async () => {
-    const res = await request(app)
-      .get(`/projects/${testProjectId}`)
-      .set('Authorization', `Bearer ${employeeToken}`);
-
-    expect(res.status).to.equal(200);
-    expect(res.body).to.have.property('id', testProjectId);
-    expect(res.body).to.not.have.property('wage');
-  });
-  /* ============================
-     POST /projects/:id/employees
-  ============================ */
-  it('Verify admin can assign and remove employees from project', async () => {
-    // Assign employee
-    const assignRes = await request(app)
-      .post(`/projects/${testProjectId}/employees`)
-      .set('Authorization', `Bearer ${adminToken}`)
-      .send({ employeeIds: [employeeId] });
-
-    expect(assignRes.status).to.equal(200);
-    expect(assignRes.body).to.have.property('message', 'Employees assigned to project successfully');
-
-    // Remove employee
-    const removeRes = await request(app)
-      .post(`/projects/${testProjectId}/employees`)
-      .set('Authorization', `Bearer ${adminToken}`)
-      .send({ employeeIds: [] });
-
-    expect(removeRes.status).to.equal(200);
-    expect(removeRes.body).to.have.property('message', 'All employees removed from project');
-  });
-  /* ============================
-     DELETE /projects/:id
-  ============================ */
-  it('Verify admin can delete a project', async () => {
-    const res = await request(app)
-      .delete(`/projects/${testProjectId}`)
-      .set('Authorization', `Bearer ${adminToken}`);
-
-    expect(res.status).to.equal(200);
-    expect(res.body).to.have.property('message', 'Project deleted successfully');
+    expect(res.body).to.have.property('message', 'Сотрудник успешно удален');
   });
 });

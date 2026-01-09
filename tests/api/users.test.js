@@ -1,12 +1,11 @@
 // tests/users.test.js
 const request = require('supertest');
 const { expect } = require('chai');
-const { faker } = require('@faker-js/faker');
-const app = require('../app');
-const db = require('../models');
+const app = require('../../app');
+const db = require('../../models');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const config = require('../config/appConfig');
+const config = require('../../config/appConfig');
 
 describe('Users API Tests', function() {
   let adminEmail;
@@ -30,6 +29,7 @@ describe('Users API Tests', function() {
   const employees = [];
 
   before(async function() {
+    ({ faker } = await import('@faker-js/faker'));
     // Recreate schema for clean state
     await db.sequelize.query('DROP SCHEMA IF EXISTS public CASCADE;');
     await db.sequelize.query('CREATE SCHEMA public;');
@@ -367,7 +367,7 @@ describe('Users API Tests', function() {
         expect(res.body.users[0].firstName.toLowerCase()).to.equal(firstNameLower);
       });
 
-      it('Verify case-insensitive search works for lastNamee', async () => {
+      it('Verify case-insensitive search works for lastName', async () => {
         const employee = employees[2];
         const lastNameLower = employee.lastName.toLowerCase();
 
@@ -511,6 +511,18 @@ describe('Users API Tests', function() {
       
       expect(res.body).to.not.have.property('password');
     });
+
+    it('Verify admin profile contains position and salary fields', async function() {
+      const res = await request(app)
+        .get('/profile')
+        .set('Authorization', `Bearer ${adminToken}`);
+
+      expect(res.status).to.equal(200);
+      expect(res.headers['content-type']).to.match(/json/);      
+      expect(res.body).to.have.property('position');
+      expect(res.body).to.have.property('salary');
+    });
+
 
     it('Verify current logged-in user profile is not returned without token', async function() {
       const res = await request(app)
