@@ -78,11 +78,11 @@ services:
     command: sh -c "npx sequelize-cli db:migrate --env test && npm run test"
 
   playwright:
-    image: mcr.microsoft.com/playwright:v1.57.0-noble
+    build:
+      context: .
+      dockerfile: Dockerfile.e2e
     container_name: my_e2e_tests
     working_dir: /e2e
-    volumes:
-      - ./:/e2e
     environment:
       - E2E_BASE_URL=http://frontend:5173
       - CI=true

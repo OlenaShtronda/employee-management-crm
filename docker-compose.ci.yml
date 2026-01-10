@@ -1,0 +1,10 @@
+services:
+  app:
+    environment:
+      NODE_ENV: test
+    volumes: []
+    command: >
+      sh -c "
+      npx sequelize-cli db:migrate &&
+      npm run start
+      "
