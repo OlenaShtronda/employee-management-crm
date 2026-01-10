@@ -26,7 +26,7 @@ export class LoginPage extends BasePage {
 
   async assertLoginPageIsOpened() {
     await this.assertPageIsOpened({
-      url: 'http://localhost:5173/login',
+      url: '/login',
       element: this.signInHeading,
     });
   }

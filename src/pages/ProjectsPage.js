@@ -88,7 +88,7 @@ export class ProjectsPage extends BasePage {
 
   async assertProjectsPageIsOpened() {
     await this.assertPageIsOpened({
-      url: 'http://localhost:5173/projects',
+      url: '/projects',
       element: this.projectsHeading,
     });
   }

@@ -32,7 +32,7 @@ export class MyProfilePage extends BasePage {
 
   async assertMyProfilePageIsOpened() {
     await this.assertPageIsOpened({
-      url: 'http://localhost:5173/profile',
+      url: '/profile',
       element: this.myProfileHeading,
     });
   }

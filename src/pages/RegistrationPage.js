@@ -14,7 +14,7 @@ export class RegistrationPage extends BasePage {
 
   async assertRegistrationPageIsOpened() {
     await this.assertPageIsOpened({
-      url: 'http://localhost:5173/register',
+      url: '/register',
       element: this.createYourAccountHeading,
     });
   }

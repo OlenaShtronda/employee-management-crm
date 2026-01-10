@@ -69,7 +69,7 @@ export class EmployeesPage extends BasePage {
 
   async assertEmployeesPageIsOpened() {
     await this.assertPageIsOpened({
-      url: 'http://localhost:5173/employees',
+      url: '/employees',
       element: this.employeesHeading,
     });
   }

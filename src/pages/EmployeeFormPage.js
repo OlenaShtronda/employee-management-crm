@@ -54,7 +54,7 @@ export class EmployeeFormPage extends BasePage {
 
     async assertEmployeeFormPageIsOpened() {
       await this.assertPageIsOpened({
-        url: 'http://localhost:5173/employees/new',
+        url: '/employees/new',
         element: this.createNewEmployeeHeading,
       });
     }

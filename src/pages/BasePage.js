@@ -4,9 +4,10 @@ import { expect } from '@playwright/test';
 export class BasePage {
   constructor(page) {
     this.page = page;
+    this.baseURL = process.env.E2E_BASE_URL || 'http://localhost:5173';
   }
 
-  async open(path = 'http://localhost:5173/login') {
+  async open(path = '/login') {
     await this.page.goto(path);
   }
 
