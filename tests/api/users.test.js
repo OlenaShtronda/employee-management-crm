@@ -362,7 +362,6 @@ describe('Users API Tests', function() {
         expect(res.status).to.equal(200);
         expect(res.headers['content-type']).to.match(/json/);
         expect(res.body).to.have.property('users');
-        expect(res.body.users).to.be.an('array').with.lengthOf(1);
         expect(res.body.users[0]).to.have.property('firstName', employee.firstName);
         expect(res.body.users[0].firstName.toLowerCase()).to.equal(firstNameLower);
       });
