@@ -75,7 +75,7 @@ services:
     volumes:
       - ./:/app
       - /app/node_modules
-    command: sh -c "npx sequelize-cli db:migrate --env test && npm run test"
+    command: sh -c "npx sequelize-cli db:migrate --env test && npm run api"
 
   playwright:
     build:

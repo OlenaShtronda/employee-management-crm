@@ -10,11 +10,13 @@
     "start": "cross-env NODE_ENV=production node app.js",
     "dev": "cross-env NODE_ENV=development nodemon app.js",
 
-    "test": "cross-env NODE_ENV=test mocha tests/**/*.test.js --exit",
-    "test:smoke": "cross-env NODE_ENV=test mocha tests/**/*.smoke.test.js --exit",
-    "test:docker:smoke": "docker compose run --rm test npm run test:smoke",
-    "test:regression": "cross-env NODE_ENV=test mocha tests/**/*.test.js --exclude tests/**/*.smoke.test.js --exit",
-    "test:docker:regression": "docker compose run --rm test npm run test:regression",
+    "api": "cross-env NODE_ENV=test mocha tests/**/*.test.js --exit",
+    "api:smoke": "cross-env NODE_ENV=test mocha tests/**/*.smoke.test.js --exit",
+    
+    "api:docker": "docker compose run --rm test",
+    "api:docker:smoke": "docker compose run --rm test npm run api:smoke",
+    "e2e:docker": "docker compose run --rm playwright",
+    "e2e:docker:smoke": "docker compose run --rm playwright npx playwright test --grep @smoke",
     
     "seed:prod": "cross-env NODE_ENV=production npx sequelize-cli db:seed:all",
     "seed:dev": "cross-env NODE_ENV=development npx sequelize-cli db:seed:all",
